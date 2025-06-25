@@ -17,8 +17,17 @@ function appendToDisplay(value) {
     }
 
     // Append the value to the display
-    if (currentValue === '0') {
+    if (currentValue === '0' && value !== '.') {
         // If the display is currently 0, replace it with the new value
+        display.value = currentValue + value;
+    else if (currentValue === '') {
+        // get the current value of the display
+        let lastNumber = currentValue.split(/[\+\-\*\/]/).pop();
+        // only add decimal point if the last number does not already contain one
+        if (lastNumber.includes('.') && value === '.') {
+            console.log('Decimal point already exists in the last number');
+            return; // Do not append if the last number already has a decimal point
+        }   
         display.value = value;
     }
     else {
@@ -35,7 +44,9 @@ function appendToDisplay(value) {
     display.value = currentValue + value;
 
     function cleardisplay() {
-    console.log('clear button was pressed');      
+    console.log('clear button was pressed');    
+    display.value = '0'; // Reset the display to 0
+    justCalculated = false; // Reset the justCalculated flag
     }
 
     alert('You pressed: ' + value);
@@ -44,9 +55,13 @@ function appendToDisplay(value) {
 
 function cleardisplay() {
         console.log('clear button was pressed');
+        display.value = '0'; // Reset the display to 0
+        justCalculated = false; // Reset the justCalculated flag
 
-        alert('clear button was clicked');
-    }
+        display.style.backgroundColor = '#f0f0f0'; // Reset background color
+        setTimeout(() => {   
+            display.style.backgroundColor = ''; // Reset background color after 1 second
+        }, 150);
 
 function deleteLast() {
     console.log('Backspace button pressed');
@@ -68,6 +83,31 @@ function calculate() {
 
     alert('Equals button was clicked');
 }
+document.addEventListener('keydown', function (event) { 
+    console.log('Key pressed: ', event.key);
+
+    if (event.key >=  '0' && event.key <= '9') {
+        appendToDisplay(event.key);
+    } else if (event.key === 'Backspace') {
+        appendToDisplay('.')
+    } else if (event.key === '+') {
+        appendToDisplay('+');
+    } else if (event.key === '-') {
+        appendToDisplay('-');
+    } else if (event.key === '/') {
+        appendToDisplay('/');
+    } else if (event.key === '*') {
+        event.preventDefault(); // Prevent default action for multiplication 
+        appendToDisplay('*');
+
+    } else if (event.key === 'Enter' || event.key === '=') {
+        calculate();
+    } else if (event.key === 'Escape' || event.key === 'c' || event.key === 'C') {
+        cleardisplay();
+    } else if (event.key === 'Backspace') {
+        deleteLast();
+        console.log('Unsupported key pressed: ', event.key);
+    }
 
 document.addEventListener('DOMContentLoaded', function () {
     console.log('calculator loaded successfully');
